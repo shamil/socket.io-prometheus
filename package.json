@@ -1,0 +1,35 @@
+{
+  "name": "socket.io-prometheus",
+  "version": "0.1.0",
+  "description": "Prometheus metrics collector for socket.io server",
+  "main": "index.js",
+  "scripts": {
+    "test": "nyc mocha --report lcovonly test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/shamil/socket.io-prometheus.git"
+  },
+  "keywords": [
+    "prometheus",
+    "socket.io"
+  ],
+  "author": "Alex Simenduev <shamil.si@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/shamil/socket.io-prometheus/issues"
+  },
+  "homepage": "https://github.com/shamil/socket.io-prometheus#readme",
+  "devDependencies": {
+    "chai": "^4.1.2",
+    "codecov": "^3.0.2",
+    "mocha": "^5.2.0",
+    "nyc": "^11.8.0",
+    "prom-client": "^11.0.0",
+    "rewire": "^4.0.1",
+    "sinon": "^5.0.10"
+  },
+  "peerDependencies": {
+    "prom-client": ">=10 <12"
+  }
+}
