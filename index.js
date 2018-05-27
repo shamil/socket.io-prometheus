@@ -1,8 +1,6 @@
 'use strict';
 
-const {Counter, Gauge} = require('prom-client');
-
-let metrics;
+let promClient, metrics;
 
 function strToBytes(str) {
   try {
@@ -35,6 +33,8 @@ function beforeHook(obj, methods, hook) {
 }
 
 function initializeMetrics() {
+  const {Counter, Gauge} = promClient;
+
   return {
     connectedSockets: new Gauge({
       name: 'socket_io_connected',
@@ -125,14 +125,13 @@ function collectMetrics(io) {
 
 module.exports = function() {
   try {
-      require.resolve('prom-client');
+    promClient = require('prom-client');
   } catch (e) {
-      if (e.code === 'MODULE_NOT_FOUND') {
-          console.log('`prom-client` not available, socket.io metrics will not be collected.');
-          return;
-      }
+    if (e.code === 'MODULE_NOT_FOUND') {
+      return console.error('`prom-client` module not installed, socket.io metrics will not be collected.');
+    }
 
-      throw e;
+    throw e;
   }
 
   return collectMetrics.apply(null, Array.from(arguments));
