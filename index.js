@@ -46,6 +46,11 @@ function initializeMetrics() {
       help: 'Total count of socket.io connection requests',
     }),
 
+    disconnectTotal: new Counter({
+      name: 'socket_io_disconnect_total',
+      help: 'Total count of socket.io disconnections',
+    }),
+
     eventsReceivedTotal: new Counter({
       name: 'socket_io_events_received_total',
       help: 'Total count of socket.io recieved events',
@@ -79,6 +84,7 @@ function collectMetrics(io) {
 
   const connectedSockets = metrics.connectedSockets;
   const connectTotal = metrics.connectTotal;
+  const disconnectTotal = metrics.disconnectTotal;
   const eventsReceivedTotal = metrics.eventsReceivedTotal;
   const eventsSentTotal = metrics.eventsSentTotal;
   const bytesReceived = metrics.bytesReceived;
@@ -88,7 +94,10 @@ function collectMetrics(io) {
   io.on('connection', (socket) => {
     connectTotal.inc();
     connectedSockets.inc();
-    socket.on('disconnect', () => connectedSockets.dec());
+    socket.on('disconnect', () => {
+      connectedSockets.dec();
+      disconnectTotal.inc();
+    });
 
     // Sent events
     beforeHook(socket, 'emit', ([event, eventStr]) => {

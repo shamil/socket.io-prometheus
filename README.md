@@ -4,7 +4,7 @@
 
 Collect `socket.io` server metrics with Prometheus.
 
-### Example Usage
+## Example Usage
 
 This module has a peer dependency on [`prom-client`][prom-client-url], version `10` and up.
 
@@ -27,7 +27,7 @@ app.get('/metrics', (req, res) => {
 })
 ```
 
-### Metrics exposed
+## Metrics exposed
 
 > all metrics have `socket_io_` prefix in their names.
 
@@ -35,13 +35,13 @@ app.get('/metrics', (req, res) => {
 | --------------------------------- | ---------------------------------------------| ------- |
 | `socket_io_connected`             | Number of currently connected sockets        |         |
 | `socket_io_connect_total`         | Total count of socket.io connection requests |         |
+| `socket_io_disconnect_total`      | Total count of socket.io disconnections      |         |
 | `socket_io_events_received_total` | Total count of socket.io recieved events     | `event` |
 | `socket_io_events_sent_total`     | Total count of socket.io sent events         | `event` |
 | `socket_io_recieve_bytes`         | Total socket.io bytes recieved               | `event` |
 | `socket_io_transmit_bytes`        | Total socket.io bytes transmitted            | `event` |
 
-
-### License
+## License
 
 Licensed under the MIT License. See the LICENSE file for details.
 

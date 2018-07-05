@@ -65,6 +65,7 @@ describe('socket.io metrics: collector', () => {
 
   const connectedSockets = metrics.connectedSockets;
   const connectTotal = metrics.connectTotal;
+  const disconnectTotal = metrics.disconnectTotal;
   const eventsReceivedTotal = metrics.eventsReceivedTotal;
   const eventsSentTotal = metrics.eventsSentTotal;
   const bytesReceived = metrics.bytesReceived;
@@ -76,7 +77,7 @@ describe('socket.io metrics: collector', () => {
     sandbox.restore();
   });
 
-  it('on connection - connectTotal and connectedSockets should call increment', () => {
+  it('on connection - connectTotal and connectedSockets should increment', () => {
     sandbox.spy(connectTotal, 'inc');
     sandbox.spy(connectedSockets, 'inc');
 
@@ -85,11 +86,13 @@ describe('socket.io metrics: collector', () => {
     expect(connectedSockets.inc.callCount).to.eq(1);
   });
 
-  it('on socket disconnect - connectedSockets should call decrement', () => {
+  it('on socket disconnect - disconnectTotal should increment and connectedSockets should decrement', () => {
     sandbox.spy(connectedSockets, 'dec');
+    sandbox.spy(disconnectTotal, 'inc');
 
     socket.emit('disconnect');
     expect(connectedSockets.dec.callCount).to.eq(1);
+    expect(disconnectTotal.inc.callCount).to.eq(1);
   });
 
   it('on socket emit - bytesTransmitted and eventsSentTotal should increment', () => {
