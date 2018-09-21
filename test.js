@@ -77,11 +77,11 @@ describe('socket.io metrics: collector', () => {
     sandbox.restore();
   });
 
-  it('on connection - connectTotal and connectedSockets should increment', () => {
+  it('on connect - connectTotal and connectedSockets should increment', () => {
     sandbox.spy(connectTotal, 'inc');
     sandbox.spy(connectedSockets, 'inc');
 
-    io.emit('connection', socket);
+    io.emit('connect', socket);
     expect(connectTotal.inc.callCount).to.eq(1);
     expect(connectedSockets.inc.callCount).to.eq(1);
   });
