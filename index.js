@@ -91,7 +91,7 @@ function collectMetrics(io) {
   const bytesTransmitted = metrics.bytesTransmitted;
 
   // listen to connect events
-  io.on('connection', (socket) => {
+  io.on('connect', (socket) => {
     connectTotal.inc();
     connectedSockets.inc();
     socket.on('disconnect', () => {
