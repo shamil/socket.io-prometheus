@@ -27,7 +27,7 @@
     "mocha": "^5.2.0",
     "nyc": "^11.9.0",
     "prom-client": "^11.1.1",
-    "rewire": "^4.0.1",
+    "rewire": "^5.0.0",
     "sinon": "^5.1.1"
   },
   "peerDependencies": {
