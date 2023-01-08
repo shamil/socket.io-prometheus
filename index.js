@@ -17,10 +17,10 @@ function beforeHook(obj, methods, hook) {
   if (!Array.isArray(methods)) methods = [methods];
 
   methods.forEach((meth) => {
-    let orig = obj[meth];
+    const orig = obj[meth];
     if (!orig) return;
 
-    obj[meth] = function () {
+    obj[meth] = function() {
       try {
         hook(arguments);
       } catch (e) {
@@ -33,47 +33,47 @@ function beforeHook(obj, methods, hook) {
 }
 
 function initializeMetrics() {
-  const {Counter, Gauge} = promClient;
+  const { Counter, Gauge } = promClient;
 
   return {
     connectedSockets: new Gauge({
       name: 'socket_io_connected',
-      help: 'Number of currently connected sockets',
+      help: 'Number of currently connected sockets'
     }),
 
     connectTotal: new Counter({
       name: 'socket_io_connect_total',
-      help: 'Total count of socket.io connection requests',
+      help: 'Total count of socket.io connection requests'
     }),
 
     disconnectTotal: new Counter({
       name: 'socket_io_disconnect_total',
-      help: 'Total count of socket.io disconnections',
+      help: 'Total count of socket.io disconnections'
     }),
 
     eventsReceivedTotal: new Counter({
       name: 'socket_io_events_received_total',
       help: 'Total count of socket.io recieved events',
-      labelNames: ['event'],
+      labelNames: ['event']
     }),
 
     eventsSentTotal: new Counter({
       name: 'socket_io_events_sent_total',
       help: 'Total count of socket.io sent events',
-      labelNames: ['event'],
+      labelNames: ['event']
     }),
 
     bytesReceived: new Counter({
       name: 'socket_io_recieve_bytes',
       help: 'Total socket.io bytes recieved',
-      labelNames: ['event'],
+      labelNames: ['event']
     }),
 
     bytesTransmitted: new Counter({
       name: 'socket_io_transmit_bytes',
       help: 'Total socket.io bytes transmitted',
-      labelNames: ['event'],
-    }),
+      labelNames: ['event']
+    })
   };
 }
 
@@ -110,18 +110,18 @@ function collectMetrics(io) {
 
     // Recieved events
     beforeHook(socket, ['addListener', 'on'], (args) => {
-      let event = args[0],
-        cbPos = args.length - 1;
+      const event = args[0];
+      const cbPos = args.length - 1;
 
       // ignore internal events
       if (event === 'disconnect') return;
 
       // get original callback function
-      let origCb = (typeof args[cbPos] === 'function') ? args[cbPos] : undefined;
+      const origCb = (typeof args[cbPos] === 'function') ? args[cbPos] : undefined;
       if (!origCb) return false;
 
-      args[cbPos] = function () {
-        let eventStr = Array.prototype.slice.call(arguments)[0];
+      args[cbPos] = function() {
+        const eventStr = Array.prototype.slice.call(arguments)[0];
 
         bytesReceived.labels(event).inc(strToBytes(eventStr));
         eventsReceivedTotal.labels(event).inc();
