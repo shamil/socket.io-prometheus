@@ -1,31 +1,31 @@
 process.env.NODE_ENV = 'test';
 
-const {EventEmitter} = require('events');
-const {expect} = require('chai');
+const { EventEmitter } = require('events');
+const { expect } = require('chai');
 const sinon = require('sinon');
 
 const promCollector = require('rewire')('./');
 
 describe('socket.io metrics: internal functions', () => {
   // retrieve unexported functions
-  let strToBytes = promCollector.__get__('strToBytes'),
-    beforeHook = promCollector.__get__('beforeHook');
+  const strToBytes = promCollector.__get__('strToBytes');
+  const beforeHook = promCollector.__get__('beforeHook');
 
   it('strToBytes works with UTF8 string', () => {
-    expect(strToBytes("Шамиль")).to.eq(12);
+    expect(strToBytes('Шамиль')).to.eq(12);
   });
 
   it('strToBytes works with non-UTF8 string', () => {
-    expect(strToBytes("Shamil")).to.eq(6);
+    expect(strToBytes('Shamil')).to.eq(6);
   });
 
   it('strToBytes works with object', () => {
-    expect(strToBytes({mesage: "Hello World!"})).to.eq(25);
+    expect(strToBytes({ mesage: 'Hello World!' })).to.eq(25);
   });
 
   it('strToBytes returns 0 on exception or undefined', () => {
-    let obj = {};
-    obj.a = {b: obj};
+    const obj = {};
+    obj.a = { b: obj };
 
     expect(strToBytes(obj)).to.eq(0);
     expect(strToBytes(undefined)).to.eq(0);
@@ -36,7 +36,7 @@ describe('socket.io metrics: internal functions', () => {
   });
 
   it('beforeHook must not change returned value', () => {
-    let obj = {func: (a) => a};
+    const obj = { func: (a) => a };
 
     beforeHook(obj, 'func', (a) => {
       a = 0;
@@ -45,7 +45,7 @@ describe('socket.io metrics: internal functions', () => {
   });
 
   it('beforeHook must catch hook exceptions', () => {
-    let obj = {func: (a) => a};
+    const obj = { func: (a) => a };
 
     beforeHook(obj, 'func', () => {
       throw new Error('something went wrong');
@@ -96,11 +96,11 @@ describe('socket.io metrics: collector', () => {
   });
 
   it('on socket emit - bytesTransmitted and eventsSentTotal should increment', () => {
-    let bytesTransmittedInc = sandbox.spy(),
-      eventsSentTotalInc = sandbox.spy();
+    const bytesTransmittedInc = sandbox.spy();
+    const eventsSentTotalInc = sandbox.spy();
 
-    sandbox.stub(bytesTransmitted, 'labels').returns({inc: bytesTransmittedInc});
-    sandbox.stub(eventsSentTotal, 'labels').returns({inc: eventsSentTotalInc});
+    sandbox.stub(bytesTransmitted, 'labels').returns({ inc: bytesTransmittedInc });
+    sandbox.stub(eventsSentTotal, 'labels').returns({ inc: eventsSentTotalInc });
 
     socket.emit('test event');
     expect(bytesTransmittedInc.callCount).to.eq(1);
@@ -108,11 +108,11 @@ describe('socket.io metrics: collector', () => {
   });
 
   it('on socket emit newListener - bytesTransmitted and eventsSentTotal should not increment', () => {
-    let bytesTransmittedInc = sandbox.spy(),
-      eventsSentTotalInc = sandbox.spy();
+    const bytesTransmittedInc = sandbox.spy();
+    const eventsSentTotalInc = sandbox.spy();
 
-    sandbox.stub(bytesTransmitted, 'labels').returns({inc: bytesTransmittedInc});
-    sandbox.stub(eventsSentTotal, 'labels').returns({inc: eventsSentTotalInc});
+    sandbox.stub(bytesTransmitted, 'labels').returns({ inc: bytesTransmittedInc });
+    sandbox.stub(eventsSentTotal, 'labels').returns({ inc: eventsSentTotalInc });
 
     socket.emit('newListener');
     expect(bytesTransmittedInc.callCount).to.eq(0);
@@ -120,11 +120,11 @@ describe('socket.io metrics: collector', () => {
   });
 
   it('on socket event - bytesReceived and eventsReceivedTotal should increment', (done) => {
-    let bytesReceivedInc = sandbox.spy(),
-      eventsReceivedTotalInc = sandbox.spy();
+    const bytesReceivedInc = sandbox.spy();
+    const eventsReceivedTotalInc = sandbox.spy();
 
-    sandbox.stub(bytesReceived, 'labels').returns({inc: bytesReceivedInc});
-    sandbox.stub(eventsReceivedTotal, 'labels').returns({inc: eventsReceivedTotalInc});
+    sandbox.stub(bytesReceived, 'labels').returns({ inc: bytesReceivedInc });
+    sandbox.stub(eventsReceivedTotal, 'labels').returns({ inc: eventsReceivedTotalInc });
 
     socket.on('event', () => {
       expect(bytesReceivedInc.callCount).to.eq(1);
@@ -136,11 +136,11 @@ describe('socket.io metrics: collector', () => {
   });
 
   it('on socket disconnect event - bytesReceived and eventsReceivedTotal should not increment', (done) => {
-    let bytesReceivedInc = sandbox.spy(),
-      eventsReceivedTotalInc = sandbox.spy();
+    const bytesReceivedInc = sandbox.spy();
+    const eventsReceivedTotalInc = sandbox.spy();
 
-    sandbox.stub(bytesReceived, 'labels').returns({inc: bytesReceivedInc});
-    sandbox.stub(eventsReceivedTotal, 'labels').returns({inc: eventsReceivedTotalInc});
+    sandbox.stub(bytesReceived, 'labels').returns({ inc: bytesReceivedInc });
+    sandbox.stub(eventsReceivedTotal, 'labels').returns({ inc: eventsReceivedTotalInc });
 
     socket.on('disconnect', () => {
       expect(bytesReceivedInc.callCount).to.eq(0);
