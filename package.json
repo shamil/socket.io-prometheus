@@ -4,6 +4,7 @@
   "description": "Prometheus metrics collector for socket.io server",
   "main": "index.js",
   "scripts": {
+    "lint": "eslint .",
     "test": "nyc mocha test.js",
     "codecov": "test -d .nyc_output && nyc report --reporter=text-lcov > coverage.lcov && codecov"
   },
