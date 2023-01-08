@@ -2,3 +2,7 @@
 coverage.lcov
 local/
 node_modules/
+
+# for pushable modules better to skip the lcok file
+# see https://github.com/npm/npm/issues/20603
+package-lock.json
