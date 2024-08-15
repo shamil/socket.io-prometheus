@@ -35,7 +35,7 @@
     "nyc": "^15.1.0",
     "prom-client": "^15.0.0",
     "rewire": "^7.0.0",
-    "sinon": "^15.2.0"
+    "sinon": "^17.0.0"
   },
   "peerDependencies": {
     "prom-client": ">=10 <15"
