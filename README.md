@@ -21,9 +21,9 @@ const promRegister = require('prom-client').register
 ioMetrics(io);
 
 // expose metrics endpoint
-app.get('/metrics', (req, res) => {
+app.get('/metrics', async (req, res) => {
   res.set('Content-Type', promRegister.contentType)
-  res.end(promRegister.metrics())
+  res.end(await promRegister.metrics())
 })
 ```
 
