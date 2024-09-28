@@ -1,15 +1,15 @@
-'use strict';
+"use strict";
 
 let promClient, metrics;
 
 function strToBytes(str) {
   try {
-    str = (typeof str === 'string') ? str : JSON.stringify(str);
+    str = typeof str === "string" ? str : JSON.stringify(str);
   } catch (e) {
     return 0;
   }
 
-  return Buffer.byteLength(str || '', 'utf8');
+  return Buffer.byteLength(str || "", "utf8");
 }
 
 function beforeHook(obj, methods, hook) {
@@ -20,7 +20,7 @@ function beforeHook(obj, methods, hook) {
     const orig = obj[meth];
     if (!orig) return;
 
-    obj[meth] = function() {
+    obj[meth] = function () {
       try {
         hook(arguments);
       } catch (e) {
@@ -37,43 +37,43 @@ function initializeMetrics() {
 
   return {
     connectedSockets: new Gauge({
-      name: 'socket_io_connected',
-      help: 'Number of currently connected sockets'
+      name: "socket_io_connected",
+      help: "Number of currently connected sockets",
     }),
 
     connectTotal: new Counter({
-      name: 'socket_io_connect_total',
-      help: 'Total count of socket.io connection requests'
+      name: "socket_io_connect_total",
+      help: "Total count of socket.io connection requests",
     }),
 
     disconnectTotal: new Counter({
-      name: 'socket_io_disconnect_total',
-      help: 'Total count of socket.io disconnections'
+      name: "socket_io_disconnect_total",
+      help: "Total count of socket.io disconnections",
     }),
 
     eventsReceivedTotal: new Counter({
-      name: 'socket_io_events_received_total',
-      help: 'Total count of socket.io recieved events',
-      labelNames: ['event']
+      name: "socket_io_events_received_total",
+      help: "Total count of socket.io recieved events",
+      labelNames: ["event"],
     }),
 
     eventsSentTotal: new Counter({
-      name: 'socket_io_events_sent_total',
-      help: 'Total count of socket.io sent events',
-      labelNames: ['event']
+      name: "socket_io_events_sent_total",
+      help: "Total count of socket.io sent events",
+      labelNames: ["event"],
     }),
 
     bytesReceived: new Counter({
-      name: 'socket_io_recieve_bytes',
-      help: 'Total socket.io bytes recieved',
-      labelNames: ['event']
+      name: "socket_io_recieve_bytes",
+      help: "Total socket.io bytes recieved",
+      labelNames: ["event"],
     }),
 
     bytesTransmitted: new Counter({
-      name: 'socket_io_transmit_bytes',
-      help: 'Total socket.io bytes transmitted',
-      labelNames: ['event']
-    })
+      name: "socket_io_transmit_bytes",
+      help: "Total socket.io bytes transmitted",
+      labelNames: ["event"],
+    }),
   };
 }
 
@@ -90,37 +90,39 @@ function collectMetrics(io) {
   const bytesReceived = metrics.bytesReceived;
   const bytesTransmitted = metrics.bytesTransmitted;
 
+  // support socket version 4
   // listen to connect events
-  io.on('connect', (socket) => {
+  io.of(/^\//).on("connect", (socket) => {
     connectTotal.inc();
     connectedSockets.inc();
-    socket.on('disconnect', () => {
+    socket.on("disconnect", () => {
       connectedSockets.dec();
       disconnectTotal.inc();
     });
 
     // Sent events
-    beforeHook(socket, 'emit', ([event, eventStr]) => {
+    beforeHook(socket, "emit", ([event, eventStr]) => {
       // ignore internal events
-      if (event === 'newListener') return;
+      if (event === "newListener") return;
 
       bytesTransmitted.labels(event).inc(strToBytes(eventStr));
       eventsSentTotal.labels(event).inc();
     });
 
     // Recieved events
-    beforeHook(socket, ['addListener', 'on'], (args) => {
+    beforeHook(socket, ["addListener", "on"], (args) => {
       const event = args[0];
       const cbPos = args.length - 1;
 
       // ignore internal events
-      if (event === 'disconnect') return;
+      if (event === "disconnect") return;
 
       // get original callback function
-      const origCb = (typeof args[cbPos] === 'function') ? args[cbPos] : undefined;
+      const origCb =
+        typeof args[cbPos] === "function" ? args[cbPos] : undefined;
       if (!origCb) return false;
 
-      args[cbPos] = function() {
+      args[cbPos] = function () {
         const eventStr = Array.prototype.slice.call(arguments)[0];
 
         bytesReceived.labels(event).inc(strToBytes(eventStr));
@@ -132,12 +134,14 @@ function collectMetrics(io) {
   });
 }
 
-module.exports = function() {
+module.exports = function () {
   try {
-    promClient = require('prom-client');
+    promClient = require("prom-client");
   } catch (e) {
-    if (e.code === 'MODULE_NOT_FOUND') {
-      return console.error('`prom-client` module not installed, socket.io metrics will not be collected.');
+    if (e.code === "MODULE_NOT_FOUND") {
+      return console.error(
+        "`prom-client` module not installed, socket.io metrics will not be collected."
+      );
     }
 
     throw e;
