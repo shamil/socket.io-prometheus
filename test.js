@@ -8,27 +8,31 @@ const promCollector = require('rewire')('./');
 
 describe('socket.io metrics: internal functions', () => {
   // retrieve unexported functions
-  const strToBytes = promCollector.__get__('strToBytes');
+  const byteLen = promCollector.__get__('byteLen');
   const beforeHook = promCollector.__get__('beforeHook');
 
-  it('strToBytes works with UTF8 string', () => {
-    expect(strToBytes('Шамиль')).to.eq(12);
+  it('byteLen works with UTF8 string', () => {
+    expect(byteLen('Шамиль')).to.eq(12);
   });
 
-  it('strToBytes works with non-UTF8 string', () => {
-    expect(strToBytes('Shamil')).to.eq(6);
+  it('byteLen works with non-UTF8 string', () => {
+    expect(byteLen('Shamil')).to.eq(6);
   });
 
-  it('strToBytes works with object', () => {
-    expect(strToBytes({ mesage: 'Hello World!' })).to.eq(25);
+  it('byteLen works with object', () => {
+    expect(byteLen({ message: 'Hello World!' })).to.eq(26);
   });
 
-  it('strToBytes returns 0 on exception or undefined', () => {
+  it('byteLen works with Buffer', () => {
+    expect(byteLen(Buffer.from('hello world'))).to.eq(11);
+  });
+
+  it('byteLen returns 0 on exception or undefined', () => {
     const obj = {};
     obj.a = { b: obj };
 
-    expect(strToBytes(obj)).to.eq(0);
-    expect(strToBytes(undefined)).to.eq(0);
+    expect(byteLen(obj)).to.eq(0);
+    expect(byteLen(undefined)).to.eq(0);
   });
 
   it('beforeHook returns false if first arg is undefined', () => {

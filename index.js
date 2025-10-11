@@ -3,16 +3,15 @@
 let promClient, metrics;
 
 function byteLen(payload) {
-  // NOTE: this could be extended to all types that directly have a .byteLength property.
-  // See documentation for Buffer.byteLength() for more info.
-  if (payload instanceof Buffer) {
-    return Buffer.byteLength(payload);
-  }
-  if (typeof payload === 'string') {
-    return Buffer.byteLength(payload, 'utf-8');
-  }
-
   try {
+    // NOTE: this could be extended to all types that directly have a .byteLength property.
+    // See documentation for Buffer.byteLength() for more info.
+    if (payload instanceof Buffer) {
+      return Buffer.byteLength(payload);
+    }
+    if (typeof payload === 'string') {
+      return Buffer.byteLength(payload, 'utf-8');
+    }
     return Buffer.byteLength(JSON.stringify(payload), 'utf-8');
   } catch (e) {
     return 0;
