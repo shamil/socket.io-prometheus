@@ -2,14 +2,20 @@
 
 let promClient, metrics;
 
-function strToBytes(str) {
+function byteLen(payload) {
   try {
-    str = (typeof str === 'string') ? str : JSON.stringify(str);
+    // NOTE: this could be extended to all types that directly have a .byteLength property.
+    // See documentation for Buffer.byteLength() for more info.
+    if (payload instanceof Buffer) {
+      return Buffer.byteLength(payload);
+    }
+    if (typeof payload === 'string') {
+      return Buffer.byteLength(payload, 'utf-8');
+    }
+    return Buffer.byteLength(JSON.stringify(payload), 'utf-8');
   } catch (e) {
     return 0;
   }
-
-  return Buffer.byteLength(str || '', 'utf8');
 }
 
 function beforeHook(obj, methods, hook) {
@@ -104,7 +110,7 @@ function collectMetrics(io) {
       // ignore internal events
       if (event === 'newListener') return;
 
-      bytesTransmitted.labels(event).inc(strToBytes(eventStr));
+      bytesTransmitted.labels(event).inc(byteLen(eventStr));
       eventsSentTotal.labels(event).inc();
     });
 
@@ -123,7 +129,7 @@ function collectMetrics(io) {
       args[cbPos] = function() {
         const eventStr = Array.prototype.slice.call(arguments)[0];
 
-        bytesReceived.labels(event).inc(strToBytes(eventStr));
+        bytesReceived.labels(event).inc(byteLen(eventStr));
         eventsReceivedTotal.labels(event).inc();
 
         return origCb.apply(this, arguments);
