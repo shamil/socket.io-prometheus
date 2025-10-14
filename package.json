@@ -38,6 +38,6 @@
     "sinon": "^18.0.0"
   },
   "peerDependencies": {
-    "prom-client": ">=10 <15"
+    "prom-client": ">=10 <16"
   }
 }
