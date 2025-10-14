@@ -42,8 +42,8 @@ describe('socket.io metrics: internal functions', () => {
   it('beforeHook must not change returned value', () => {
     const obj = { func: (a) => a };
 
-    beforeHook(obj, 'func', (a) => {
-      a = 0;
+    beforeHook(obj, 'func', () => {
+      // Hook that doesn't use the parameter
     });
     expect(obj.func(10)).to.not.eq(0);
   });
@@ -67,13 +67,13 @@ describe('socket.io metrics: collector', () => {
   // retrieve unexported metrix variable
   const metrics = promCollector.__get__('metrics');
 
-  const connectedSockets = metrics.connectedSockets;
-  const connectTotal = metrics.connectTotal;
-  const disconnectTotal = metrics.disconnectTotal;
-  const eventsReceivedTotal = metrics.eventsReceivedTotal;
-  const eventsSentTotal = metrics.eventsSentTotal;
-  const bytesReceived = metrics.bytesReceived;
-  const bytesTransmitted = metrics.bytesTransmitted;
+  const { connectedSockets } = metrics;
+  const { connectTotal } = metrics;
+  const { disconnectTotal } = metrics;
+  const { eventsReceivedTotal } = metrics;
+  const { eventsSentTotal } = metrics;
+  const { bytesReceived } = metrics;
+  const { bytesTransmitted } = metrics;
 
   const sandbox = sinon.createSandbox();
 
