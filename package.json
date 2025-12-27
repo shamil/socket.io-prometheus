@@ -30,7 +30,7 @@
     "mocha": "^11.7.4",
     "nyc": "^17.0.0",
     "prom-client": "^15.0.0",
-    "rewire": "^7.0.0",
+    "rewire": "^9.0.1",
     "sinon": "^21.0.0"
   },
   "peerDependencies": {
