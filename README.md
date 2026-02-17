@@ -31,15 +31,15 @@ app.get('/metrics', (req, res) => {
 
 > all metrics have `socket_io_` prefix in their names.
 
-| Name                              | Help                                         | Labels  |
-| --------------------------------- | ---------------------------------------------| ------- |
-| `socket_io_connected`             | Number of currently connected sockets        |         |
-| `socket_io_connect_total`         | Total count of socket.io connection requests |         |
-| `socket_io_disconnect_total`      | Total count of socket.io disconnections      |         |
-| `socket_io_events_received_total` | Total count of socket.io recieved events     | `event` |
-| `socket_io_events_sent_total`     | Total count of socket.io sent events         | `event` |
-| `socket_io_recieve_bytes`         | Total socket.io bytes recieved               | `event` |
-| `socket_io_transmit_bytes`        | Total socket.io bytes transmitted            | `event` |
+| Name                              | Help                                         | Labels               |
+|-----------------------------------|----------------------------------------------|----------------------|
+| `socket_io_connected`             | Number of currently connected sockets        | `namespace`          |
+| `socket_io_connect_total`         | Total count of socket.io connection requests | `namespace`          |
+| `socket_io_disconnect_total`      | Total count of socket.io disconnections      | `namespace`          |
+| `socket_io_events_received_total` | Total count of socket.io recieved events     | `namespace`, `event` |
+| `socket_io_events_sent_total`     | Total count of socket.io sent events         | `namespace`, `event` |
+| `socket_io_recieve_bytes`         | Total socket.io bytes recieved               | `namespace`, `event` |
+| `socket_io_transmit_bytes`        | Total socket.io bytes transmitted            | `namespace`, `event` |
 
 ## License
 

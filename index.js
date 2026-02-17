@@ -50,40 +50,43 @@ function initializeMetrics() {
     connectedSockets: new Gauge({
       name: 'socket_io_connected',
       help: 'Number of currently connected sockets',
+      labelNames: ['namespace'],
     }),
 
     connectTotal: new Counter({
       name: 'socket_io_connect_total',
       help: 'Total count of socket.io connection requests',
+      labelNames: ['namespace'],
     }),
 
     disconnectTotal: new Counter({
       name: 'socket_io_disconnect_total',
       help: 'Total count of socket.io disconnections',
+      labelNames: ['namespace'],
     }),
 
     eventsReceivedTotal: new Counter({
       name: 'socket_io_events_received_total',
       help: 'Total count of socket.io recieved events',
-      labelNames: ['event'],
+      labelNames: ['event', 'namespace'],
     }),
 
     eventsSentTotal: new Counter({
       name: 'socket_io_events_sent_total',
       help: 'Total count of socket.io sent events',
-      labelNames: ['event'],
+      labelNames: ['event', 'namespace'],
     }),
 
     bytesReceived: new Counter({
       name: 'socket_io_recieve_bytes',
       help: 'Total socket.io bytes recieved',
-      labelNames: ['event'],
+      labelNames: ['event', 'namespace'],
     }),
 
     bytesTransmitted: new Counter({
       name: 'socket_io_transmit_bytes',
       help: 'Total socket.io bytes transmitted',
-      labelNames: ['event'],
+      labelNames: ['event', 'namespace'],
     }),
   };
 }
@@ -93,21 +96,17 @@ function collectMetrics(io) {
     metrics = initializeMetrics();
   }
 
-  const { connectedSockets } = metrics;
-  const { connectTotal } = metrics;
-  const { disconnectTotal } = metrics;
-  const { eventsReceivedTotal } = metrics;
-  const { eventsSentTotal } = metrics;
-  const { bytesReceived } = metrics;
-  const { bytesTransmitted } = metrics;
+  const { connectedSockets, connectTotal, disconnectTotal, eventsReceivedTotal, eventsSentTotal, bytesReceived, bytesTransmitted } = metrics;
+
+  const namespace = io.name ?? null
 
   // listen to connect events
   io.on('connect', (socket) => {
-    connectTotal.inc();
-    connectedSockets.inc();
+    connectTotal.labels({namespace}).inc();
+    connectedSockets.labels({namespace}).inc();
     socket.on('disconnect', () => {
-      connectedSockets.dec();
-      disconnectTotal.inc();
+      connectedSockets.labels({namespace}).dec();
+      disconnectTotal.labels({namespace}).inc();
     });
 
     // Sent events
@@ -117,8 +116,8 @@ function collectMetrics(io) {
         return;
       }
 
-      bytesTransmitted.labels(event).inc(byteLen(eventStr));
-      eventsSentTotal.labels(event).inc();
+      bytesTransmitted.labels({event, namespace}).inc(byteLen(eventStr));
+      eventsSentTotal.labels({event, namespace}).inc();
     });
 
     // Recieved events
@@ -140,8 +139,8 @@ function collectMetrics(io) {
       args[cbPos] = function() {
         const eventStr = Array.prototype.slice.call(arguments)[0];
 
-        bytesReceived.labels(event).inc(byteLen(eventStr));
-        eventsReceivedTotal.labels(event).inc();
+        bytesReceived.labels({event, namespace}).inc(byteLen(eventStr));
+        eventsReceivedTotal.labels({event, namespace}).inc();
 
         return origCb.apply(this, arguments);
       };
